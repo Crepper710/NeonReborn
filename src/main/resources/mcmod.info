@@ -1,0 +1,16 @@
+[
+{
+  "modid": "neon_reborn",
+  "name": "Neon Reborn",
+  "description": "Still TODO",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Crepper710"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
