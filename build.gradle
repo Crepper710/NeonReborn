@@ -112,8 +112,28 @@ jar {
     )
 }
 
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives sourcesJar
+}
+
 configurations {
     mods
     shade
     compile.extendsFrom shade
+}
+
+reobf { shadowJar { mappingType = 'SEARGE' } }
+tasks.reobfShadowJar.mustRunAfter shadowJar
+
+apply plugin: "idea"
+
+idea {
+    module {
+        inheritOutputDirs = true
+    }
 }
