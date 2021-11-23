@@ -15,6 +15,7 @@ public class MixinLoader implements IFMLLoadingPlugin {
         MixinBootstrap.init();
         Mixins.addConfiguration("mixins.neon_reborn.json");
         MixinEnvironment.getDefaultEnvironment().setSide(MixinEnvironment.Side.CLIENT);
+        System.out.println("hi");
     }
 
     @NotNull
