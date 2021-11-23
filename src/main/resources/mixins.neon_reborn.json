@@ -4,6 +4,6 @@
   "refmap": "mixins.neon_reborn.refmap.json",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    
+    "MixinMinecraft"
   ]
 }
