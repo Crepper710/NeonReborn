@@ -2,7 +2,7 @@ package io.github.crepper710.neon_reborn.eventsystem;
 
 public enum EventPriority {
 
-    HIGH(1), DEFAULT(0), LOW(-1);
+    INTERNAL(-2), HIGH(-1), DEFAULT(0), LOW(1);
 
     private final int value;
 

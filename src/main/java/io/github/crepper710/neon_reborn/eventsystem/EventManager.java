@@ -1,11 +1,10 @@
 package io.github.crepper710.neon_reborn.eventsystem;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
-public class EventBus {
+public class EventManager {
 
     private static final Comparator<MethodInfo> COMPARATOR = Comparator.comparingInt(MethodInfo::getPriority);
 
@@ -41,7 +40,7 @@ public class EventBus {
         for (Method m : object.getClass().getDeclaredMethods()) {
             if (m.isAnnotationPresent(Subscribe.class)) {
                 if (m.getParameterCount() == 1) {
-                    if (m.getParameterTypes()[0].isAssignableFrom(Event.class)) {
+                    if (Event.class.isAssignableFrom(m.getParameterTypes()[0])) {
                         Subscribe annotation = m.getAnnotation(Subscribe.class);
                         m.setAccessible(true);
                         Arrays.stream(annotation.value()).filter(targetEventClass::equals).forEach(eventClass -> {

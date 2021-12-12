@@ -1,20 +1,36 @@
 package io.github.crepper710.neon_reborn;
 
-import io.github.crepper710.neon_reborn.eventsystem.EventBus;
-import io.github.crepper710.neon_reborn.utils.WrappedLogger;
+import io.github.crepper710.neon_reborn.eventsystem.EventManager;
+import io.github.crepper710.neon_reborn.filesystem.bytepacking.BytePack;
+import io.github.crepper710.neon_reborn.filesystem.bytepacking.BytePackingInputStream;
+import io.github.crepper710.neon_reborn.filesystem.bytepacking.BytePackingOutputStream;
+import io.github.crepper710.neon_reborn.filesystem.bytepacking.datatypes.BytePackDouble;
+import io.github.crepper710.neon_reborn.filesystem.bytepacking.datatypes.BytePackList;
+import io.github.crepper710.neon_reborn.filesystem.bytepacking.datatypes.BytePackMap;
+import io.github.crepper710.neon_reborn.filesystem.bytepacking.datatypes.BytePackStringUTF8;
+import io.github.crepper710.neon_reborn.gui.SettingsGui;
+import io.github.crepper710.neon_reborn.notifications.NotificationManager;
+import io.github.crepper710.neon_reborn.settingsystem.SettingManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.message.Message;
-import org.apache.logging.log4j.message.MessageFactory;
 import org.apache.logging.log4j.message.StringFormatterMessageFactory;
-import org.slf4j.MDC;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class NeonReborn {
 
     private static NeonReborn instance;
 
-    private final Logger logger;
-    private final EventBus eventBus;
+    private Logger logger;
+    private EventManager eventManager;
+    private NotificationManager notificationManager;
+    private SettingManager settingManager;
+    private SettingsGui setingsGui;
 
     public static class Info {
 
@@ -28,6 +44,7 @@ public class NeonReborn {
 
     public static void start() {
         instance = new NeonReborn();
+        instance.init();
         instance.getLogger().info("start up");
     }
 
@@ -36,17 +53,48 @@ public class NeonReborn {
         instance = null;
     }
 
-    private NeonReborn() {
-        logger = WrappedLogger.wrapIfPossible(LogManager.getLogger(NeonReborn.class, new StringFormatterMessageFactory()), "[Neom Reborn] ");
-        eventBus = new EventBus();
+    private NeonReborn() {}
+
+    private void init() {
+        logger = LogManager.getLogger("Neon Reborn", new StringFormatterMessageFactory());
+        eventManager = new EventManager();
+        notificationManager = new NotificationManager();
+        settingManager = new SettingManager();
+        setingsGui = new SettingsGui();
+        ByteArrayOutputStream bais = new ByteArrayOutputStream();
+        BytePackMap bp = new BytePackMap();
+        bp.setInteger("int", 1);
+        bp.setStringASCII("string1", "ascii");
+        bp.setStringUTF16("string2", "utf16");
+        bp.set("list", new BytePackList(Arrays.asList(new BytePackDouble(0.123), new BytePackStringUTF8("test"), new BytePackMap())));
+        try {
+            new BytePackingOutputStream(bais).writeBytePack(bp);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        NeonReborn.getInstance().getLogger().info(bais.toString() + " : " + IntStream.range(0, bais.toByteArray().length).mapToObj(i -> String.format("%02x", bais.toByteArray()[i])).collect(Collectors.joining(" ")));
+        try {
+            BytePack re = new BytePackingInputStream(new ByteArrayInputStream(bais.toByteArray())).readBytePack();
+            NeonReborn.getInstance().getLogger().info(re.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public Logger getLogger() {
         return logger;
     }
 
-    public EventBus getEventBus() {
-        return eventBus;
+    public EventManager getEventManager() {
+        return eventManager;
+    }
+
+    public NotificationManager getNotificationManager() {
+        return notificationManager;
+    }
+
+    public SettingManager getSettingManager() {
+        return settingManager;
     }
 
     public static NeonReborn getInstance() {
